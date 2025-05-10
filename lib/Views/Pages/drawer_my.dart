@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:this_is_tayrd/cubit/home_cubit/home_cubit.dart';
 
 import '../../helper/constans.dart';
 
-String ?name;
-String ? areaId;
+String? name;
+String? areaId;
+
 //this
 class CustomDrawer extends StatefulWidget {
   final Function(int) onItemSelected;
@@ -24,20 +26,19 @@ class _CustomDrawerState extends State<CustomDrawer>
   bool _isLoading = false;
 
   @override
-  void initState()  {
+  void initState() {
     super.initState();
-  getnameAndAreaID();
+    getnameAndAreaID();
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
     )..forward();
   }
-  void getnameAndAreaID()
-  async{
-      SharedPreferences shared = await SharedPreferences.getInstance();
-    name=shared.getString("EmployeeName");
-    areaId=shared.getString('areaName');
 
+  void getnameAndAreaID() async {
+    SharedPreferences shared = await SharedPreferences.getInstance();
+    name = shared.getString("EmployeeName");
+    areaId = shared.getString('areaName');
   }
 
   @override
@@ -87,19 +88,29 @@ class _CustomDrawerState extends State<CustomDrawer>
                 children: [
                   _buildHeader(),
                   Expanded(
-                    child: ListView(
-                      padding: EdgeInsets.zero,
-                      children: [
-                        _buildItem(0, Icons.analytics, " اخذ قراءة"),
-                        _buildDivider(),
-                        _buildItem(1, Icons.assignment_add, "  التقارير"),
-                        _buildDivider(),
-                        _buildItem(2, Icons.lock_outline, "تغيير كلمة المرور"),
-                        _buildDivider(),
-                        _buildItem(3, Icons.info_outline, "عن التطبيق"),
-                        _buildDivider(),
-                        _buildItem(4, Icons.exit_to_app, "تسجيل الخروج"),
-                      ],
+                    child: BlocBuilder<HomeCubit, HomeState>(
+                      builder: (context, state) {
+                        return ListView(
+                          padding: EdgeInsets.zero,
+                          children: [
+                            if(state is HomeSuccess )
+                            Column(
+                              children: [
+                                _buildItem(0, Icons.analytics, " اخذ قراءة"),
+                            _buildDivider(),
+                            _buildItem(1, Icons.assignment_add, "  التقارير"),
+                            _buildDivider(),
+                            _buildItem(
+                                2, Icons.lock_outline, "تغيير كلمة المرور"),
+                            _buildDivider(),
+                              ],
+                            ),
+                            _buildItem(3, Icons.info_outline, "عن التطبيق"),
+                            _buildDivider(),
+                            _buildItem(4, Icons.exit_to_app, "تسجيل الخروج"),
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -111,70 +122,72 @@ class _CustomDrawerState extends State<CustomDrawer>
     );
   }
 
- Widget _buildHeader() {
-  return UserAccountsDrawerHeader(
-    // إن أردت إزالة أي مسافة افتراضية أسفل الهيدر
-    margin: EdgeInsets.zero,
+  Widget _buildHeader() {
+    return UserAccountsDrawerHeader(
+      // إن أردت إزالة أي مسافة افتراضية أسفل الهيدر
+      margin: EdgeInsets.zero,
 
-    decoration: BoxDecoration(
-      color: kColorSecond,
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.3),
-          spreadRadius: 2,
-          blurRadius: 10,
-          offset: const Offset(0, 3),
-        ),
-      ],
-    ),
+      decoration: BoxDecoration(
+        color: kColorSecond,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
 
-    // زيادة المسافة أسفل البريد
-    accountEmail: Padding(
-      padding: const EdgeInsets.only(bottom: 0),
-      child: Text(
-        "اسم المنطقة : $areaId",
-        style: const TextStyle(
-          fontSize: 18,
-          color: Colors.white,
+      // زيادة المسافة أسفل البريد
+      accountEmail: Padding(
+        padding: const EdgeInsets.only(bottom: 0),
+        child: Text(
+          "اسم المنطقة : $areaId",
+          style: const TextStyle(
+            fontSize: 18,
+            color: Colors.white,
+          ),
         ),
       ),
-    ),
 
-    // زيادة المسافة أسفل الاسم
-    accountName: Padding(
-      padding: const EdgeInsets.only(bottom: 0.0),
-      child: Text(
-        "مستخدم:  $name",
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 22,
-          color: Colors.white.withOpacity(0.9),
+      // زيادة المسافة أسفل الاسم
+      accountName: Padding(
+        padding: const EdgeInsets.only(bottom: 0.0),
+        child: Text(
+          "مستخدم:  $name",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            color: Colors.white.withOpacity(0.9),
+          ),
         ),
       ),
-    ),
 
-    // إضافة حشوة حول صورة الحساب إن أردت
-    currentAccountPicture: Padding(
-      padding: const EdgeInsets.only(bottom: 12.0,top: 0),
-      child: CircleAvatar(
-        backgroundColor: kColorThreed,
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          child: _isLoading
-              ? const CircularProgressIndicator(color: Colors.white)
-              : const Icon(Icons.person, color: Colors.white, size: 40),
+      // إضافة حشوة حول صورة الحساب إن أردت
+      currentAccountPicture: Padding(
+        padding: const EdgeInsets.only(bottom: 12.0, top: 0),
+        child: CircleAvatar(
+          backgroundColor: kColorThreed,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: _isLoading
+                ? const CircularProgressIndicator(color: Colors.white)
+                : const Icon(Icons.person, color: Colors.white, size: 40),
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildItem(int index, IconData icon, String title) {
     return AnimatedContainer(
       duration: Duration(milliseconds: 200 + index * 100),
       curve: Curves.easeInOut,
       transform: Matrix4.translationValues(
-        _animationController.isAnimating ? 50 * (1 - _animationController.value) : 0,
+        _animationController.isAnimating
+            ? 50 * (1 - _animationController.value)
+            : 0,
         0,
         0,
       ),
@@ -182,7 +195,7 @@ class _CustomDrawerState extends State<CustomDrawer>
         leading: AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
           child: _isLoading && _selectedIndex == index
-              ?  const CircularProgressIndicator(
+              ? const CircularProgressIndicator(
                   color: kColorThreed,
                   strokeWidth: 2,
                 )

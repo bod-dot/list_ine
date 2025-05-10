@@ -16,7 +16,7 @@ final TextEditingController textEditingController;
   Widget build(BuildContext context) {
     return TextFormField(
 
-      maxLength: textInputType==TextInputType.phone?9:null,
+      maxLength: textInputType==TextInputType.phone?9:50,
       keyboardType:textInputType ,
 
       controller: textEditingController,

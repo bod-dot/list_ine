@@ -1,6 +1,7 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:this_is_tayrd/Views/Pages/about_app.dart';
 import 'package:this_is_tayrd/Widgets/no_permission_screen.dart';
 import 'package:this_is_tayrd/helper/my_snackbar.dart';
 
@@ -49,7 +50,7 @@ class _MainScreenState extends State<MainScreen> {
                 builder: (context) => const ChangePasswordScreen()));
         break;
         case 3:
-        
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>const AboutScreen()));
       
         break;
         case 4:

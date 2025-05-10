@@ -8,6 +8,8 @@ import 'Views/Pages/loagin_page.dart';
 import 'Widgets/qr_code_scanner.dart';
 import 'cubit/home_cubit/home_cubit.dart';
 import 'helper/constans.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart'; 
 
 String? employeeID;
 void main() async {
@@ -15,6 +17,10 @@ void main() async {
   SharedPreferences shared = await SharedPreferences.getInstance();
   employeeID = shared.getString("EmployeeID");
   Bloc.observer=SimpleObserver();
+
+    await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 

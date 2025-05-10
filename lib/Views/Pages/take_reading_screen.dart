@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lottie/lottie.dart';
 import 'package:this_is_tayrd/Widgets/qr_code_scanner.dart';
+import 'package:this_is_tayrd/Widgets/screen_photo.dart';
 import 'package:this_is_tayrd/cubit/home_cubit/home_cubit.dart';
 import 'package:this_is_tayrd/cubit/take_reading/take_reading_cubit.dart';
 
@@ -17,9 +18,10 @@ import '../../helper/my_snackbar.dart';
 
 class TakeReadingScreen extends StatefulWidget {
   const TakeReadingScreen({
-    super.key, this.qrCode,
+    super.key, this.qrCode,  this.nameCustomer,
   });
   final String? qrCode ;
+  final String ? nameCustomer;
 
   static String id = 'ReadingScreen';
 
@@ -38,7 +40,7 @@ class _TakeReadingScreenState extends State<TakeReadingScreen> {
  if (widget.qrCode?.isNotEmpty ?? false)
     {
        qrCode.text=widget.qrCode!;
-         name.text=BlocProvider.of<HomeCubit>(context).customers.firstWhere((customer)=>customer.electronicMeterID == int.parse(qrCode.text)).customerName;
+         name.text=widget.nameCustomer!;
     }
     super.initState();
   }
@@ -202,13 +204,9 @@ class _TakeReadingScreenState extends State<TakeReadingScreen> {
                               text: reading,
                               suffix: InkWell(
                                 onTap: () {
-                                  Navigator.pushNamed(
-                                      context, QrCodeScanner.qrcodeScreenId);
+                                  Navigator.push(context, MaterialPageRoute(builder: (Context)=>AdvancedMeterReader(qrCode: int.parse(qrCode.text))));
     
-                                  reading.text =
-                                      BlocProvider.of<HomeCubit>(context)
-                                              .electronicMeterID ??
-                                          '';
+                                  
                                 },
                                 child: const Icon(
                                   Icons.photo_camera,

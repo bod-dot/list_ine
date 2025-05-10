@@ -2,7 +2,10 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui' as ui;
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
@@ -105,7 +108,7 @@ class _AdvancedMeterReaderState extends State<AdvancedMeterReader> {
 
   String _refineReading(String rawText) {
     final patterns = [
-      RegExp(r'\d{4,6}'),
+      RegExp(r'\d{4,6,8}'), // قراءة مكونة من 4 إلى 6 أرقام
       RegExp(r'\d+\.\d{2}'),
     ];
 
@@ -195,72 +198,99 @@ class _AdvancedMeterReaderState extends State<AdvancedMeterReader> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("قارئ العداد الذكي")),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
         
-            Container(
-              height: 300,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(12),
+        appBar: AppBar(
+          actions: [
+            Directionality(
+              textDirection: TextDirection.ltr,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
-              child: _image != null 
-                  ? _buildImageSelector()
-                  : const Center(child: Icon(Icons.photo_camera, size: 60)),
             ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          ],
+          automaticallyImplyLeading: false,
+          title: const Text("قارئ العداد الذكي",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              )),
+          centerTitle: true,
+        ),
+        body: Directionality(
+          textDirection: TextDirection.ltr,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
               children: [
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.camera_alt),
-                  label:const   Text("التقاط صورة",style: TextStyle(color: kColorPrimer,fontSize: 18),),
-                  onPressed: _captureImage,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                    iconColor: kColorPrimer
-                    
+            
+                Container(
+                  height: 300,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: _image != null 
+                      ? _buildImageSelector()
+                      : const Center(child: Icon(Icons.photo_camera, size: 60)),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.camera_alt),
+                      label:const   Text("التقاط صورة",style: TextStyle(color: kColorPrimer,fontSize: 18),),
+                      onPressed: _captureImage,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        iconColor: kColorPrimer
+                        
+                      ),
+                    ),
+                    ElevatedButton.icon(
+                      icon: _isProcessing 
+                          ? const CircularProgressIndicator()
+                          : const Icon(Icons.analytics),
+                      label: Text(_isProcessing ? "جارِ التحليل..." : "تحليل الصورة",style:const  TextStyle(color: kColorPrimer,fontSize: 18),),
+                      onPressed: !_isProcessing && _image != null ? _processImage : null,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16)
+                        ,
+                          iconColor: kColorPrimer
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[50],
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Text(
+                    _reading.isEmpty ? "-----" : _reading,
+                    style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
                   ),
                 ),
-                ElevatedButton.icon(
-                  icon: _isProcessing 
-                      ? const CircularProgressIndicator()
-                      : const Icon(Icons.analytics),
-                  label: Text(_isProcessing ? "جارِ التحليل..." : "تحليل الصورة",style:const  TextStyle(color: kColorPrimer,fontSize: 18),),
-                  onPressed: !_isProcessing && _image != null ? _processImage : null,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16)
-                    ,
-                      iconColor: kColorPrimer
+                // زر المتابعة يظهر فقط إذا كانت القراءة موجودة وغير فارغة
+                if (_reading.isNotEmpty && _reading != 'لم يتم التعرف على القراءة')
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child:Custombutton(onPressed: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> const TakeReadingScreen()));
+                    }, lable: "متابعة")
                   ),
-                ),
               ],
             ),
-            const SizedBox(height: 30),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.blue[50],
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Text(
-                _reading.isEmpty ? "-----" : _reading,
-                style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
-              ),
-            ),
-            // زر المتابعة يظهر فقط إذا كانت القراءة موجودة وغير فارغة
-            if (_reading.isNotEmpty && _reading != 'لم يتم التعرف على القراءة')
-              Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child:Custombutton(onPressed: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=> const TakeReadingScreen()));
-                }, lable: "متابعة")
-              ),
-          ],
+          ),
         ),
       ),
     );

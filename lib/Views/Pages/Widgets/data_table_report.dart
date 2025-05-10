@@ -108,8 +108,7 @@ class _DataTableReportState extends State<DataTableReport> {
       ),
     ],
   ),
-  child: SizedBox(
-    width: height > width ?700:850,
+  child: Expanded(
     child: DataTable(
       border: TableBorder(
         horizontalInside: BorderSide(width: 1, color: Colors.grey.shade300),
@@ -188,7 +187,7 @@ class _DataTableReportState extends State<DataTableReport> {
                   }
                   else {
                   
-                     Navigator.push(context, MaterialPageRoute(builder: (context)=>TakeReadingScreen(qrCode: data.electronicMeterID.toString(),)));
+                     Navigator.push(context, MaterialPageRoute(builder: (context)=>TakeReadingScreen(qrCode: data.electronicMeterID.toString(),nameCustomer: data.customerName,)));
                                 
                   }
                 }

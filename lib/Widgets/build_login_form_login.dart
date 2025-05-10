@@ -69,10 +69,15 @@ class _BuildLoginFormLoginState extends State<BuildLoginFormLogin> {
                  areaList= BlocProvider.of<LoginCubitCubit>(context).areaList;
                  return Mydropdown(areaList: areaList);
                 }
-                else 
+                else if(state is LoginAreasLoaded)
                 {
                        return const Text('لم يتم تحميل المناطق');
                 }
+                else 
+                {
+                  return Mydropdown(areaList: areaList);
+                }
+                
               },
             ),
             const SizedBox(height: 20),

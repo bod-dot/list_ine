@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:this_is_tayrd/Views/Pages/take_reading_screen.dart';
 
 import 'package:this_is_tayrd/models/customer.dart';
 
@@ -59,37 +60,45 @@ class Homebuildanimatedclientcards extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: kColorPrimer,
-                              child: Text(
-                                item.customerName[0],
-                                style:  const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 22,
+                    child: InkWell(
+                      onTap: ()
+                      {
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>TakeReadingScreen(qrCode:item.electronicMeterID.toString(), nameCustomer: item.customerName,)));
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: kColorPrimer,
+                                  child: Text(
+                                    item.customerName[0],
+                                    style:  const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 22,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                           const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                item.customerName,
-                                style: const  TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  color: kColorPrimer,
+                               const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    item.customerName,
+                                    style: const  TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: kColorPrimer,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        ...buildClientDetails(item),
-                      ],
+                          ),
+                          const SizedBox(height: 20),
+                          ...buildClientDetails(item),
+                        ],
+                      ),
                     ),
                   ),
                 ),

@@ -43,18 +43,18 @@ class _ChangePasswrodFormState extends State<ChangePasswrodForm> {
         listener: (context, state) {
           if(state is ChagePasswordConfirmPassword)
           {
-            Mysnackbar().showSnackbarError(title: "خظاء", context: context, message: 'كلمة السر غير متطابقة', contentType: ContentType.failure);
+            Mysnackbar().showSnackbarError(title: "خطأ", context: context, message: 'كلمة السر غير متطابقة', contentType: ContentType.failure);
           }
           else if(state is ChagePasswordFauiler)
           {
-            Mysnackbar().showSnackbarError(title: "خظاء", context: context, message: state.err, contentType: ContentType.failure);
+            Mysnackbar().showSnackbarError(title: "خطأ", context: context, message: state.err, contentType: ContentType.failure);
           }
           else if(state is ChagePasswordSuccess)
           {
             Mysnackbar().showSnackbarError(title: "تم بنجاح", context: context, message:'تم تغيير كلمة السر بنجاح', contentType: ContentType.success);
           }else if(state is ChagePasswordwrongPasswrod)
           {
-            Mysnackbar().showSnackbarError(title: "خظاء", context: context, message: 'كلمة السر غير صحيحة', contentType: ContentType.failure);
+            Mysnackbar().showSnackbarError(title: "خطأ", context: context, message: 'كلمة السر القديمة غير صحيحة', contentType: ContentType.failure);
           }
           
         },
